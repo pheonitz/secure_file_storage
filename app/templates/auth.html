@@ -1,129 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Secure File Storage - Login / Signup</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #007BFF, #00C6FF);
-            height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-        }
-        .container {
-            width: 100%;
-            max-width: 400px;
-            background: white;
-            padding: 40px 30px;
-            border-radius: 10px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            transition: 0.3s ease;
-        }
-        h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #333;
-        }
-        form {
-            display: none;
-            transition: all 0.3s ease;
-        }
-        form.active {
-            display: block;
-        }
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 14px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 15px;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #007BFF;
-            color: white;
-            font-weight: bold;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-        button:hover {
-            background: #0056b3;
-        }
-        .toggle-btn {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .toggle-btn button {
-            background: none;
-            border: none;
-            color: #007BFF;
-            font-weight: bold;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-        .toggle-btn button:hover {
-            color: #0056b3;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Secure File Storage</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, sans-serif;
+      background-color: #f2f7ff;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    /* Navbar */
+    .navbar {
+      background-color: #002855;
+      padding: 18px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar strong {
+      color: #fff;
+      font-size: 1.5rem;
+      letter-spacing: 1px;
+    }
+
+    .navbar a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 18px;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .navbar a:hover {
+      color: #ffdd57;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 100px 25px;
+      background: linear-gradient(145deg, #0066ff, #004fc5);
+      color: white;
+    }
+
+    .hero h1 {
+      font-size: 2.8rem;
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      max-width: 800px;
+      margin: 0 auto 10px;
+      opacity: 0.95;
+    }
+
+    .hero a {
+      display: inline-block;
+      margin: 20px 10px 0;
+      padding: 14px 28px;
+      background-color: white;
+      color: #004fc5;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .hero a:hover {
+      background-color: #f0f0f0;
+      color: #0033a0;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 18px;
+      background-color: #002855;
+      color: #ccc;
+      font-size: 0.9rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.2rem;
+      }
+
+      .hero p {
+        font-size: 1rem;
+      }
+
+      .hero a {
+        padding: 12px 20px;
+        font-size: 0.95rem;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h2 id="form-title">Login</h2>
 
-        <!-- Login Form -->
-        <form id="login-form" class="active" method="post" action="/login">
-            <input type="text" name="username" placeholder="Enter username" required>
-            <input type="password" name="password" placeholder="Enter password" required>
-            <button type="submit">Login</button>
-        </form>
-
-        <!-- Signup Form -->
-        <form id="signup-form" method="post" action="/signup">
-            <input type="text" name="username" placeholder="Choose username" required>
-            <input type="password" name="password" placeholder="Choose password" required>
-            <button type="submit">Sign Up</button>
-        </form>
-
-        <div class="toggle-btn">
-            <span id="toggle-text">Don't have an account?</span>
-            <button type="button" onclick="toggleForms()">Sign Up</button>
-        </div>
+  <div class="navbar">
+    <div><strong>SecureStorage</strong></div>
+    <div>
+      <a href="/login">Login</a>
+      <a href="/signup">Sign Up</a>
     </div>
+  </div>
 
-    <script>
-        const loginForm = document.getElementById('login-form');
-        const signupForm = document.getElementById('signup-form');
-        const title = document.getElementById('form-title');
-        const toggleText = document.getElementById('toggle-text');
-        const toggleBtn = document.querySelector('.toggle-btn button');
+  <div class="hero">
+    <h1>Mai kya ji suniyan inanu jrra dekhliyaan 😂😂</h1>
+    <p>Dekho jyda bakchodi krne kae hamari aadat ni – simple files daalo, seedha encrypt hongi <strong>AES-256</strong> standards se.</p>
+    <p>Agr kalko attack pda lappy pe, toh password daalo aur retrieve krlo files bina tension ke.😎😎😎</p>
+    <p>Encrypt. Upload. Access. From anywhere.</p>
+    <a href="/signup">Create Free Account</a>
+    <a href="/login">Login</a>
+  </div>
 
-        function toggleForms() {
-            if (loginForm.classList.contains('active')) {
-                loginForm.classList.remove('active');
-                signupForm.classList.add('active');
-                title.innerText = "Sign Up";
-                toggleText.innerText = "Already have an account?";
-                toggleBtn.innerText = "Login";
-            } else {
-                signupForm.classList.remove('active');
-                loginForm.classList.add('active');
-                title.innerText = "Login";
-                toggleText.innerText = "Don't have an account?";
-                toggleBtn.innerText = "Sign Up";
-            }
-        }
-    </script>
+  <div class="footer">
+    &copy; 2025 Secure File Storage. All rights reserved.
+  </div>
+
 </body>
 </html>

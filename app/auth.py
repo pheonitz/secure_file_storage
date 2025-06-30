@@ -22,7 +22,8 @@ def signup() :
     password = request.form.get('password')
 
     if not username or not password:
-        return jsonify({'error': 'Username and password required'}), 400
+        return render_template('signup.html', error='Username and password required')
+
 
     if os.path.exists(USER_DATA_FILE):
         with open(USER_DATA_FILE, 'r') as f:
@@ -31,7 +32,7 @@ def signup() :
         users = {}
 
     if username in users:
-        return jsonify({'error': 'User already exists'}), 409
+        return render_template('signup.html', error='User already exists')
 
     users[username] = generate_password_hash(password)
 
@@ -48,19 +49,20 @@ def login():
     password = request.form.get('password')
 
     if not username or not password:
-        return jsonify({'error': 'Username and password required'}), 400
+        return render_template('login.html', error='Username and password required')
 
     if not os.path.exists(USER_DATA_FILE):
-        return jsonify({'error': 'No users registered yet'}), 404
+        return render_template('login.html', error='No users registered yet')
 
     with open(USER_DATA_FILE, 'r') as f:
         users = json.load(f)
 
     if username not in users or not check_password_hash(users[username], password):
-        return jsonify({'error': 'Invalid credentials'}), 401
+        return render_template('login.html', error='Invalid credentials')
 
     session['username'] = username
     return render_template('upload.html', username=username)
+
 
 
 @auth_bp.route('/logout', methods=['POST'])
