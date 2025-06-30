@@ -1,39 +1,50 @@
-from flask import Blueprint, request, jsonify, send_file
+from flask import Blueprint, request, render_template, send_file, session, redirect, url_for
 import os
 import json
 from app.utils import verify_password
-from flask_limiter import Limiter 
+from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
 limiter = Limiter(get_remote_address)
-
 download_bp = Blueprint('download', __name__)
 
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # go up to root
+# Paths
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 UPLOAD_FOLDER = os.path.join(PROJECT_ROOT, 'uploads')
 DATA_FILE = os.path.join(PROJECT_ROOT, 'file_metadata.json')
 
 
-
 @download_bp.route('/download/<filename>', methods=['POST'])
+@limiter.limit("5 per minute")
 def download_file(filename):
+    if 'username' not in session:
+        return render_template('upload.html', error="❌ Please log in to download files.")
+
+    username = session['username']
     filename = filename.strip()
 
-    if filename not in metadata:
-        print(f"❌ File '{filename}' not found in metadata")
-        return jsonify({'error': 'File not found in metadata'}), 404
+    # Check if metadata file exists
+    if not os.path.exists(DATA_FILE):
+        return render_template('upload.html', username=username, error="❌ No file metadata found.")
 
-    hashed = metadata[filename]
+    with open(DATA_FILE, 'r') as f:
+        metadata = json.load(f)
+
+    # Check if user and file exist in metadata
+    if username not in metadata or filename not in metadata[username]:
+        return render_template('upload.html', username=username, error=f"❌ File '{filename}' not found.")
+
     password = request.form.get('password')
-
     if not password:
-        return jsonify({'error': 'Password required'}), 400
+        return render_template('upload.html', username=username, error="❌ Password is required.")
 
+    hashed = metadata[username][filename]
     if not verify_password(password, hashed):
-        return jsonify({'error': 'Invalid password'}), 403
+        return render_template('upload.html', username=username, error="❌ Invalid password.")
 
-    file_path = os.path.join(UPLOAD_FOLDER, filename)
+    # Construct final path
+    file_path = os.path.join(UPLOAD_FOLDER, username, filename)
     if not os.path.exists(file_path):
-        return jsonify({'error': 'File not found on server'}), 410
+        return render_template('upload.html', username=username, error=f"❌ File not found on server at {file_path}")
 
     return send_file(file_path, as_attachment=True)

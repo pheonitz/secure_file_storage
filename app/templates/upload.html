@@ -1,56 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <title>Upload & Download</title>
-</head>
-<body>
-  <h2>📤 Upload File</h2>
-  <form action="/upload" method="POST" enctype="multipart/form-data">
-    <input type="file" name="file"><br>
-    <input type="text" name="password" placeholder="Enter password"><br>
-    <input type="submit" value="Upload">
-  </form>
+  <title>Secure File Upload & Download</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-  <hr>
+    .container {
+      background: white;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-width: 500px;
+    }
 
-  <h2>📥 Download File</h2>
-  <form id="download-form" method="POST">
-    <input type="text" name="filename" placeholder="File name (e.g. file.pdf)"><br>
-    <input type="password" name="password" placeholder="Enter password"><br>
-    <input type="submit" value="Download">
-  </form>
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
 
+    h3 {
+      margin-top: 30px;
+      margin-bottom: 10px;
+      color: #555;
+    }
+
+    input[type="file"],
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+  </style>
   <script>
-    document.getElementById("download-form").addEventListener("submit", function (e) {
-      e.preventDefault();
-      const form = e.target;
-      const filename = form.filename.value;
-      const formData = new FormData(form);
-
-      fetch(`/download/${filename}`, {
-        method: 'POST',
-        body: formData
-      })
-        .then(response => {
-          if (!response.ok) {
-            return response.json().then(data => {
-              alert(data.error || 'Error downloading file');
-              throw new Error(data.error);
-            });
-          }
-          return response.blob();
-        })
-        .then(blob => {
-          const a = document.createElement('a');
-          const url = URL.createObjectURL(blob);
-          a.href = url;
-          a.download = filename;
-          a.click();
-          URL.revokeObjectURL(url);
-        })
-        .catch(console.error);
-    });
+    function updateDownloadAction() {
+      const filename = document.getElementById('downloadFilename').value;
+      const form = document.getElementById('downloadForm');
+      form.action = "/download/" + encodeURIComponent(filename);
+    }
   </script>
+</head>
+
+<body>
+  <div class="container">
+    <h2>Welcome, {{ username }}!</h2>
+
+    {% if message %}
+    <p style="color: green;">{{ message }}</p>
+    {% endif %}
+
+
+    {% if error %}
+    <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <h3>📤 Upload a File</h3>
+    <form method="POST" action="/upload" enctype="multipart/form-data">
+      <input type="file" name="file" required>
+      <input type="password" name="password" placeholder="Set a password for this file" required>
+      <button type="submit">Upload</button>
+    </form>
+
+    <h3>📥 Download a File</h3>
+    <form id="downloadForm" method="POST" onsubmit="updateDownloadAction()">
+      <input type="text" id="downloadFilename" name="filename" placeholder="Filename (e.g. file.pdf)" required>
+      <input type="password" name="password" placeholder="Enter file password" required>
+      <button type="submit">Download</button>
+    </form>
+
+    <form method="POST" action="/logout">
+      <button style="background-color: #dc3545;">Logout</button>
+    </form>
+
+    <h3>Your Files</h3>
+    <ul>
+      {% for file in files %}
+      <li>{{ file }}</li>
+      {% endfor %}
+    </ul>
+
+  </div>
 </body>
+
 </html>
