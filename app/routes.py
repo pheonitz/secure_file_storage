@@ -4,7 +4,6 @@ import json
 from werkzeug.utils import secure_filename
 from app.utils import hash_password
 
-
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
