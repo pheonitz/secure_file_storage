@@ -1,3 +1,4 @@
 Flask==2.3.2
 Werkzeug==2.3.7
-flask-limiter
+flask-limiter==3.3.1
+bcrypt==4.1.2
