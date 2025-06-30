@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload & Download</title>
+</head>
+<body>
+  <h2>📤 Upload File</h2>
+  <form action="/upload" method="POST" enctype="multipart/form-data">
+    <input type="file" name="file"><br>
+    <input type="text" name="password" placeholder="Enter password"><br>
+    <input type="submit" value="Upload">
+  </form>
+
+  <hr>
+
+  <h2>📥 Download File</h2>
+  <form id="download-form" method="POST">
+    <input type="text" name="filename" placeholder="File name (e.g. file.pdf)"><br>
+    <input type="password" name="password" placeholder="Enter password"><br>
+    <input type="submit" value="Download">
+  </form>
+
+  <script>
+    document.getElementById("download-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const form = e.target;
+      const filename = form.filename.value;
+      const formData = new FormData(form);
+
+      fetch(`/download/${filename}`, {
+        method: 'POST',
+        body: formData
+      })
+        .then(response => {
+          if (!response.ok) {
+            return response.json().then(data => {
+              alert(data.error || 'Error downloading file');
+              throw new Error(data.error);
+            });
+          }
+          return response.blob();
+        })
+        .then(blob => {
+          const a = document.createElement('a');
+          const url = URL.createObjectURL(blob);
+          a.href = url;
+          a.download = filename;
+          a.click();
+          URL.revokeObjectURL(url);
+        })
+        .catch(console.error);
+    });
+  </script>
+</body>
+</html>
