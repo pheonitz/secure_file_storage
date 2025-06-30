@@ -1,10 +1,10 @@
-from app.utils import hash_password , verify_password
-from app.routes import app
+from app.utils import hash_password, verify_password
+from flask import Flask
+from app.routes import app as upload_app
+from app.download_routes import download_bp
 
-hashed = hash_password("mypassword")
-print(hashed)
-print("verfied : ", verify_password("mypassword" , hashed))
-print("wrong : ", verify_password("wrongpass" , hashed))
+# Register the blueprint for download route
+upload_app.register_blueprint(download_bp)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    upload_app.run(debug=True)
